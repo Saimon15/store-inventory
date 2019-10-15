@@ -1,19 +1,23 @@
 import React, { Component } from 'react';
 import { Table, Button, Modal, Form } from 'react-bootstrap';
 import EditModal from './EditModal';
+import CreateModal from './CreateModal';
 
 class PostsTable extends Component {
     constructor(props) {
         super(props);
         this.state = {
             posts: [],
-            showModal: false
+            showModal: false,
+            showCreateModal: false
         }
     this.onEditButtonClick = this.onEditButtonClick.bind(this);
+    this.onCreateButtonClick = this.onCreateButtonClick.bind(this);
+    this.rerenderParent = this.rerenderParent.bind(this);
     }
 
     getData() {
-        fetch('https://jsonplaceholder.typicode.com/posts?_limit=10')
+        fetch('http://localhost:8000/products/')
         .then(response => response.json())
         .then(json_response => {
             this.setState({
@@ -27,6 +31,11 @@ class PostsTable extends Component {
         this.getData();
     }
 
+    rerenderParent() {
+        console.log('in rerender')
+        this.getData()
+    }
+
     onEditButtonClick(data) {
         this.refs.child.open();
         this.refs.child.setModalData(data);
@@ -34,6 +43,14 @@ class PostsTable extends Component {
             showModal: true
         });
     }
+
+    onCreateButtonClick() {
+        this.refs.grandChild.open();
+        this.setState({
+            showCreateModal: true
+        });
+    }
+
 
     onDeleteButtonClick(data) {
         console.log('in delete');
@@ -46,10 +63,10 @@ class PostsTable extends Component {
 
         data.forEach((obj) => {
             let table_data = [];
-            table_data.push(<td>{obj.userId}</td>);
             table_data.push(<td>{obj.id}</td>);
             table_data.push(<td>{obj.title}</td>);
-            table_data.push(<td width="40%">{obj.body}</td>)
+            table_data.push(<td>{obj.price}</td>);
+            table_data.push(<td width="40%">{obj.description}</td>)
             table_data.push(
                 <td><Button 
                         variant="primary" 
@@ -78,13 +95,24 @@ class PostsTable extends Component {
     render() {
         return (
             <div>
+                <div style={{marginBottom: '10px'}}>
+                <h3 style={{textAlign: 'center'}}>Products List</h3>
+                <Button 
+                        variant="primary" 
+                        type="button"
+                        style={{textAlign: 'right'}}
+                        onClick={() => this.onCreateButtonClick()}
+                    >
+                        + Add New
+                </Button>
+                </div>
                 <Table striped bordered hover>
                 <thead>
                     <tr>
-                    <th>User ID</th>
-                    <th>ID</th>
-                    <th>Title</th>
-                    <th>Body</th>
+                    <th>Product ID</th>
+                    <th>Name</th>
+                    <th>Price</th>
+                    <th>Description</th>
                     <th>Action</th>
                     </tr>
                 </thead>
@@ -92,7 +120,8 @@ class PostsTable extends Component {
                     {this.populateTable()}
                 </tbody>
             </Table>
-            <EditModal ref="child"/>
+            <EditModal ref="child" rerenderParent={this.rerenderParent}/>
+            <CreateModal ref="grandChild" rerenderParent={this.rerenderParent}/>
             </div>
         );
     }

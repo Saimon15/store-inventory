@@ -1,14 +1,15 @@
 import React, { Component } from 'react';
 import { Button, Modal, Form } from 'react-bootstrap';
 
-class EditModal extends Component {
+class CreateModal extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            showModal: false,
+            showCreateModal: false,
             title: '',
-            id: '',
-            description: ''
+            description: '',
+            price: '',
+            category: ''
         }
         this.open = this.open.bind(this);
         this.close = this.close.bind(this);
@@ -17,20 +18,12 @@ class EditModal extends Component {
     }
 
     close() {
-        this.setState({ showModal: false });
+        this.setState({ showCreateModal: false });
       }
   
     open() {
-        this.setState({ showModal: true });
+        this.setState({ showCreateModal: true });
       }
-
-    setModalData(data) {
-        this.setState({
-            title: data.title,
-            id: data.id,
-            description: data.description
-        });
-    }
 
     onInputChange(event){
         const target = event.target;
@@ -43,13 +36,13 @@ class EditModal extends Component {
       }
     
     onSubnit() {
-        console.log('title: ' + this.state.title);
-        const post_id = this.state.id
-        fetch('http://localhost:8000/products/' + post_id, {
-        method: 'PATCH',
+        fetch('http://localhost:8000/products/', {
+        method: 'POST',
         body: JSON.stringify({
             title: this.state.title,
-            description: this.state.description
+            price: this.state.price,
+            description: this.state.description,
+            category: this.state.category
         }),
         headers: {
             "Content-type": "application/json; charset=UTF-8"
@@ -72,14 +65,14 @@ class EditModal extends Component {
         return (
             <Modal
                 onHide={this.close}
-                show={this.state.showModal}
+                show={this.state.showCreateModal}
                 size="lg"
                 aria-labelledby="contained-modal-title-vcenter"
                 centered
                 >
                 <Modal.Header closeButton>
                     <Modal.Title id="contained-modal-title-vcenter">
-                    Edit Post
+                    Create new product
                     </Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
@@ -88,7 +81,7 @@ class EditModal extends Component {
                         <Form.Label>Title</Form.Label>
                         <Form.Control 
                             type="text" 
-                            placeholder="Post title" 
+                            placeholder="Product Name" 
                             value={this.state.title} 
                             name='title'
                             onChange={this.onInputChange} />
@@ -98,18 +91,45 @@ class EditModal extends Component {
                         </Form.Group>
 
                         <Form.Group controlId="formBasicText">
-                        <Form.Label>Body</Form.Label>
+                        <Form.Label>Description</Form.Label>
                         <textarea 
                             className="form-control"
-                            placeholder="Post body" 
+                            placeholder="Product description" 
                             value={this.state.description} 
-                            name='body'
+                            name='description'
                             onChange={this.onInputChange}>
                         </textarea>
                         <Form.Text className="text-muted">
                             Post body can be at max 255 chars long
                         </Form.Text>
                         </Form.Group>
+
+                        <Form.Group controlId="formBasicText">
+                        <Form.Label>Price</Form.Label>
+                        <Form.Control 
+                            type="number" 
+                            placeholder="Product Price" 
+                            value={this.state.price} 
+                            name='price'
+                            onChange={this.onInputChange} />
+                        <Form.Text className="text-muted">
+                            Enter amount in BDT
+                        </Form.Text>
+                        </Form.Group>
+
+                        <Form.Group controlId="formBasicText">
+                        <Form.Label>Category</Form.Label>
+                        <Form.Control 
+                            type="number" 
+                            placeholder="Product Category" 
+                            value={this.state.category} 
+                            name='category'
+                            onChange={this.onInputChange} />
+                        <Form.Text className="text-muted">
+                            Enter the product category
+                        </Form.Text>
+                        </Form.Group>
+
                     </Form>
                 </Modal.Body>
                 <Modal.Footer>
@@ -127,4 +147,4 @@ class EditModal extends Component {
     }
 }
 
-export default EditModal;
+export default CreateModal;
